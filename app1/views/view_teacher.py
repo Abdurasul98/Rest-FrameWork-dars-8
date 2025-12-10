@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from app1.serializers import *
 from rest_framework.response import Response
-
+from rest_framework.authentication import TokenAuthentication
 
 class TeacherView(APIView):
     def get(self, request):
@@ -25,12 +25,15 @@ class TeacherView(APIView):
 
 
 class CreateUserView(APIView):
+    authentication_classes = [TokenAuthentication]
+
     @swagger_auto_schema(request_body=CreateUserSerializer)
     def post(self, request):
         serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             user = User.objects.create(
+                username=data['phone_number'],
                 phone_number = data['phone_number'],
                 email = data['email'],
                 is_teacher=True,

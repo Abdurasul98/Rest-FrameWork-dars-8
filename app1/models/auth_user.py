@@ -11,15 +11,18 @@ class BaseModel(models.Model):
 
 
 class CustomerUserManager(BaseUserManager):
-    def create_user(self, username,password,**extra_fields):
-        if not username:
+    def create_user(self, phone_number,email,password,**extra_fields):
+        if not phone_number:
             raise ValueError("Username kiritilishi shart")
-        user = self.model(username=username,**extra_fields)
+        if not email:
+            raise ValueError("Email kiritilishi shart")
+
+        user = self.model(phone_number=phone_number,email=email,**extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self,username,password,**extra_fields):
+    def create_superuser(self,phone_number,email,password,**extra_fields):
         extra_fields.setdefault('is_superuser',True)
         extra_fields.setdefault('is_staff',True)
 
@@ -29,7 +32,7 @@ class CustomerUserManager(BaseUserManager):
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser is_staff=True bolishi kerak')
 
-        return self.create_user(username,password,**extra_fields)
+        return self.create_user(phone_number,email,password,**extra_fields)
 
 
 class User(AbstractUser,PermissionsMixin):
